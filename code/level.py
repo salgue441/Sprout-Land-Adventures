@@ -27,7 +27,7 @@ class Level:
         :return: None
         """
 
-        Player((100, 100), self.all_sprites)
+        self.player = Player((640, 360), self.all_sprites)
 
     def run(self, dt) -> None:
         """
