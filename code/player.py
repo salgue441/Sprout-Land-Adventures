@@ -34,13 +34,20 @@ class Player(pg.sprite.Sprite):
         # Timers
         self.timers = {
             'tool use': GameTimer(350, self.use_tool),
-            'tool switch': GameTimer(200)
+            'tool switch': GameTimer(200),
+            'seed use': GameTimer(350, self.use_seeds),
+            'seed switch': GameTimer(200)
         }
 
         # Tool sets
         self.tools = ['hoe', 'axe', 'water']
         self.tool_index = 0
         self.selected_tool = self.tools[self.tool_index]
+
+        # Seeds
+        self.seeds = ['corn', 'tomato']
+        self.seed_index = 0
+        self.selected_seed = self.seeds[self.seed_index]
 
     def import_assets(self) -> None:
         """
@@ -76,6 +83,11 @@ class Player(pg.sprite.Sprite):
 
     def use_tool(self) -> None:
         """ 
+        """
+        pass
+
+    def use_seeds(self) -> None:
+        """
         """
         pass
 
@@ -128,6 +140,22 @@ class Player(pg.sprite.Sprite):
                     self.tools) else 0
 
                 self.selected_tool = self.tools[self.tool_index]
+
+            # Seed Use
+            if keys[pg.K_LCTRL]:
+                self.timers['seed use'].activate()
+                self.direction = pg.math.Vector2()
+                self.frame_index = 0
+
+            # Seed Change
+            if keys[pg.K_e] and not self.timers['seed switch'].active:
+                self.timers['seed switch'].activate()
+                self.seed_index += 1
+
+                self.seed_index = self.seed_index if self.seed_index < len(
+                    self.seeds) else 0
+
+                self.selected_seed = self.seeds[self.seed_index]
 
     def get_status(self) -> None:
         """
