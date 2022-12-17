@@ -3,6 +3,7 @@ import pygame as pg
 # From files
 from player import Player
 from overlay import Overlay
+from CameraGroup import CameraGroup
 
 
 class Level:
@@ -17,7 +18,7 @@ class Level:
         self.screen = pg.display.get_surface()
 
         # sprite groups
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = CameraGroup()
 
         self.setup()
         self.overlay = Overlay(self.player)
@@ -40,7 +41,6 @@ class Level:
         """
 
         self.screen.fill((0, 0, 0))
-        self.all_sprites.draw(self.screen)
-
+        self.all_sprites.custom_draw()
         self.all_sprites.update(dt)
         self.overlay.display()
