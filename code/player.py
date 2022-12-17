@@ -47,6 +47,21 @@ class Player(pg.sprite.Sprite):
             full_path = '../graphics/character/' + animation
             self.animations[animation] = import_folder(full_path)
 
+    def animate(self, dt) -> None:
+        """ 
+        Animates the player 
+        :param: self - The object being created
+        :param: dt - The time since the last frame
+        :return: None
+        """
+
+        self.frame_index += 4 * dt
+
+        if self.frame_index >= len(self.animations[self.status]):
+            self.frame_index = 0
+
+        self.image = self.animations[self.status][int(self.frame_index)]
+
     def input(self) -> None:
         """
         This method will be used to get the input from the player.
@@ -59,9 +74,11 @@ class Player(pg.sprite.Sprite):
         # Horizontal Movement
         if keys[pg.K_a]:
             self.direction.x = -1
+            self.status = 'left'
 
         elif keys[pg.K_d]:
             self.direction.x = 1
+            self.status = 'right'
 
         else:
             self.direction.x = 0
@@ -69,12 +86,25 @@ class Player(pg.sprite.Sprite):
         # Vertical Movement
         if keys[pg.K_w]:
             self.direction.y = -1
+            self.status = 'up'
 
         elif keys[pg.K_s]:
             self.direction.y = 1
+            self.status = 'down'
 
         else:
             self.direction.y = 0
+
+    def get_status(self) -> None:
+        """
+        Check if the player is not moving. If the player is not moving, 
+        adds _idle to the status.
+        :param: self - The object being created
+        :return: None
+        """
+
+        if self.direction.magnitude() == 0:
+            self.status = self.status.split('_')[0] + '_idle'
 
     def move(self, dt) -> None:
         """
@@ -106,4 +136,6 @@ class Player(pg.sprite.Sprite):
         """
 
         self.input()
+        self.get_status()
         self.move(dt)
+        self.animate(dt)
