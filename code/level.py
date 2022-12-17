@@ -2,6 +2,7 @@ import pygame as pg
 
 # From files
 from player import Player
+from overlay import Overlay
 
 
 class Level:
@@ -19,6 +20,7 @@ class Level:
         self.all_sprites = pg.sprite.Group()
 
         self.setup()
+        self.overlay = Overlay(self.player)
 
     def setup(self) -> None:
         """
@@ -41,3 +43,4 @@ class Level:
         self.all_sprites.draw(self.screen)
 
         self.all_sprites.update(dt)
+        self.overlay.display()
