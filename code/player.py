@@ -2,6 +2,7 @@ import pygame as pg
 
 # From files
 from support import import_folder
+from Timer import GameTimer
 
 
 class Player(pg.sprite.Sprite):
@@ -29,6 +30,14 @@ class Player(pg.sprite.Sprite):
         self.direction = pg.math.Vector2()
         self.pos = pg.math.Vector2(self.rect.center)
         self.speed = 200
+
+        # Timers
+        self.timers = {
+            'tool use': GameTimer(350, self.use_tool)
+        }
+
+        # Tool sets
+        self.select_tool = 'water'
 
     def import_assets(self) -> None:
         """
@@ -62,6 +71,11 @@ class Player(pg.sprite.Sprite):
 
         self.image = self.animations[self.status][int(self.frame_index)]
 
+    def use_tool(self) -> None:
+        """ 
+        """
+        pass
+
     def input(self) -> None:
         """
         This method will be used to get the input from the player.
@@ -71,29 +85,35 @@ class Player(pg.sprite.Sprite):
 
         keys = pg.key.get_pressed()
 
-        # Horizontal Movement
-        if keys[pg.K_a]:
-            self.direction.x = -1
-            self.status = 'left'
+        if not self.timers['tool use'].active:
+            # Horizontal Movement
+            if keys[pg.K_a]:
+                self.direction.x = -1
+                self.status = 'left'
 
-        elif keys[pg.K_d]:
-            self.direction.x = 1
-            self.status = 'right'
+            elif keys[pg.K_d]:
+                self.direction.x = 1
+                self.status = 'right'
 
-        else:
-            self.direction.x = 0
+            else:
+                self.direction.x = 0
 
-        # Vertical Movement
-        if keys[pg.K_w]:
-            self.direction.y = -1
-            self.status = 'up'
+            # Vertical Movement
+            if keys[pg.K_w]:
+                self.direction.y = -1
+                self.status = 'up'
 
-        elif keys[pg.K_s]:
-            self.direction.y = 1
-            self.status = 'down'
+            elif keys[pg.K_s]:
+                self.direction.y = 1
+                self.status = 'down'
 
-        else:
-            self.direction.y = 0
+            else:
+                self.direction.y = 0
+
+            # Tool use
+            if keys[pg.K_SPACE]:
+                self.timers['tool use'].activate()
+                self.direction = pg.math.Vector2()
 
     def get_status(self) -> None:
         """
@@ -105,6 +125,19 @@ class Player(pg.sprite.Sprite):
 
         if self.direction.magnitude() == 0:
             self.status = self.status.split('_')[0] + '_idle'
+
+        if self.timers['tool use'].active:
+            self.status = self.status.split('_')[0] + '_' + self.select_tool
+
+    def update_timers(self) -> None:
+        """
+        Updates the timer for the tools use property. 
+        :param: self - The object being created. 
+        :return: None
+        """
+
+        for timer in self.timers.values():
+            timer.update()
 
     def move(self, dt) -> None:
         """
@@ -137,5 +170,7 @@ class Player(pg.sprite.Sprite):
 
         self.input()
         self.get_status()
+        self.update_timers()
+
         self.move(dt)
         self.animate(dt)
