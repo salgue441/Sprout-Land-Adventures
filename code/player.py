@@ -1,6 +1,7 @@
 import pygame as pg
 
 # From files
+from settings import LAYERS
 from support import import_folder
 from Timer import GameTimer
 
@@ -25,6 +26,7 @@ class Player(pg.sprite.Sprite):
         # General setup
         self.image = self.animations[self.status][self.frame_index]
         self.rect = self.image.get_rect(center=position)
+        self.z = LAYERS['main']
 
         # Movement Attributes
         self.direction = pg.math.Vector2()

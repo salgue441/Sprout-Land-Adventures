@@ -1,9 +1,11 @@
 import pygame as pg
 
 # From files
+from settings import LAYERS
 from player import Player
 from overlay import Overlay
 from CameraGroup import CameraGroup
+from sprites import GenericSprite
 
 
 class Level:
@@ -30,7 +32,17 @@ class Level:
         :return: None
         """
 
+        # Player
         self.player = Player((640, 360), self.all_sprites)
+
+        # Ground
+        GenericSprite(
+            position=(0, 0),
+            surface=pg.image.load(
+                '../graphics/world/ground.png').convert_alpha(),
+            group=self.all_sprites,
+            z=LAYERS['ground']
+        )
 
     def run(self, dt) -> None:
         """
@@ -41,6 +53,7 @@ class Level:
         """
 
         self.screen.fill((0, 0, 0))
-        self.all_sprites.custom_draw()
+        self.all_sprites.custom_draw(self.player)
         self.all_sprites.update(dt)
+
         self.overlay.display()
