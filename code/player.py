@@ -33,11 +33,14 @@ class Player(pg.sprite.Sprite):
 
         # Timers
         self.timers = {
-            'tool use': GameTimer(350, self.use_tool)
+            'tool use': GameTimer(350, self.use_tool),
+            'tool switch': GameTimer(200)
         }
 
         # Tool sets
-        self.select_tool = 'water'
+        self.tools = ['hoe', 'axe', 'water']
+        self.tool_index = 0
+        self.selected_tool = self.tools[self.tool_index]
 
     def import_assets(self) -> None:
         """
@@ -114,6 +117,17 @@ class Player(pg.sprite.Sprite):
             if keys[pg.K_SPACE]:
                 self.timers['tool use'].activate()
                 self.direction = pg.math.Vector2()
+                self.frame_index = 0
+
+            # Chaning tools
+            if keys[pg.K_q] and not self.timers['tool switch'].active:
+                self.timers['tool switch'].activate()
+                self.tool_index += 1
+
+                self.tool_index = self.tool_index if self.tool_index < len(
+                    self.tools) else 0
+
+                self.selected_tool = self.tools[self.tool_index]
 
     def get_status(self) -> None:
         """
@@ -127,7 +141,7 @@ class Player(pg.sprite.Sprite):
             self.status = self.status.split('_')[0] + '_idle'
 
         if self.timers['tool use'].active:
-            self.status = self.status.split('_')[0] + '_' + self.select_tool
+            self.status = self.status.split('_')[0] + '_' + self.selected_tool
 
     def update_timers(self) -> None:
         """
